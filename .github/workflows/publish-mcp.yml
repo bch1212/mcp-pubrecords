@@ -1,0 +1,67 @@
+name: Publish to Anthropic MCP Registry
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # id-token: write is required for the MCP Registry's OIDC auth at
+      # /v0/auth/github-oidc.
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate server.json basics
+        run: |
+          jq . server.json > /dev/null
+          desc_len=$(jq -r '.description | length' server.json)
+          echo "description length: $desc_len (must be <=100)"
+          if [ "$desc_len" -gt 100 ]; then
+            echo "ERROR: description exceeds the registry's 100-char limit"; exit 1
+          fi
+
+      - name: Get GitHub Actions OIDC token (registry audience)
+        id: oidc
+        # The MCP Registry expects the OIDC token to have audience set to its
+        # own URL — confirmed by 401 'invalid audience' on default audience.
+        run: |
+          token=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=https://registry.modelcontextprotocol.io" \
+            | jq -r '.value')
+          if [ -z "$token" ] || [ "$token" = "null" ]; then
+            echo "Failed to obtain OIDC token"; exit 1
+          fi
+          echo "::add-mask::$token"
+          echo "oidc_token=$token" >> "$GITHUB_OUTPUT"
+
+      - name: Exchange OIDC token for MCP Registry JWT
+        id: exchange
+        run: |
+          resp=$(curl -sS -X POST https://registry.modelcontextprotocol.io/v0/auth/github-oidc \
+            -H "content-type: application/json" \
+            -d "{\"oidc_token\":\"${{ steps.oidc.outputs.oidc_token }}\"}")
+          echo "exchange resp: $(echo "$resp" | jq 'del(.token, .registry_token)' 2>/dev/null || echo "$resp")"
+          tok=$(echo "$resp" | jq -r '.token // .registry_token // empty')
+          if [ -z "$tok" ]; then echo "No registry token in response"; echo "$resp"; exit 1; fi
+          echo "::add-mask::$tok"
+          echo "registry_token=$tok" >> "$GITHUB_OUTPUT"
+
+      - name: Submit server.json to MCP Registry
+        run: |
+          resp=$(curl -sS -X POST https://registry.modelcontextprotocol.io/v0/publish \
+            -H "Authorization: Bearer ${{ steps.exchange.outputs.registry_token }}" \
+            -H "content-type: application/json" \
+            -d @server.json)
+          echo "publish resp: $resp"
+          if echo "$resp" | grep -qiE '"status":\s*[45]'; then
+            if echo "$resp" | grep -qi "already"; then
+              echo "Already published — idempotent, ok"; exit 0
+            fi
+            exit 1
+          fi
