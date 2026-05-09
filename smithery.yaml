@@ -1,0 +1,26 @@
+# Smithery configuration for PubRecords MCP.
+# Smithery auto-indexes public GitHub repos with this file.
+# https://smithery.ai/docs/build/project-config
+
+startCommand:
+  type: http
+  configSchema:
+    type: object
+    required:
+      - apiKey
+    properties:
+      apiKey:
+        type: string
+        title: PubRecords API Key
+        description: "Free dev key: pubrecords-dev-key-001 (30 calls/day). Pro at mcpize.com/pubrecords-mcp."
+  exampleConfig:
+    apiKey: pubrecords-dev-key-001
+
+build:
+  dockerfile: Dockerfile
+
+server:
+  remote:
+    url: https://mcp-pubrecords-production.up.railway.app/mcp/
+    headers:
+      X-API-Key: "{apiKey}"
