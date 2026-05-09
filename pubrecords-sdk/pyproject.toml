@@ -1,0 +1,34 @@
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pubrecords"
+version = "0.1.0"
+description = "Python client for the PubRecords MCP — US public-records intelligence for AI agents."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [{ name = "Brett Halverson", email = "brett.halverson@gmail.com" }]
+keywords = ["mcp", "model-context-protocol", "public-records", "sec-edgar", "opencorporates", "kyb", "due-diligence", "compliance", "ai-agents"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = ["httpx>=0.27"]
+
+[project.urls]
+Homepage = "https://github.com/bch1212/mcp-pubrecords"
+Repository = "https://github.com/bch1212/mcp-pubrecords"
+Issues = "https://github.com/bch1212/mcp-pubrecords/issues"
+Live = "https://mcp-pubrecords-production.up.railway.app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pubrecords"]
