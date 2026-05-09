@@ -10,10 +10,8 @@
   "websiteUrl": "https://github.com/bch1212/mcp-pubrecords",
   "remotes": [
     {
-      "transport": {
-        "type": "streamable-http",
-        "url": "https://mcp-pubrecords-production.up.railway.app/mcp/"
-      },
+      "type": "streamable-http",
+      "url": "https://mcp-pubrecords-production.up.railway.app/mcp/",
       "headers": [
         {
           "name": "X-API-Key",
