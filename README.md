@@ -61,6 +61,26 @@ X-API-Key: pubrecords-dev-key-001
 
 ---
 
+## Python SDK
+
+A thin Python wrapper for non-MCP integrations is published on PyPI:
+
+```bash
+pip install pubrecords
+```
+
+```python
+from pubrecords import PubRecords
+
+client = PubRecords(api_key="pubrecords-dev-key-001")
+print(client.health())
+print(client.search_companies(name="Apple", state="CA"))
+```
+
+Source: [`pubrecords-sdk/`](./pubrecords-sdk). PyPI: <https://pypi.org/project/pubrecords/>.
+
+---
+
 ## REST surface (mirrors the MCP tools)
 
 All MCP tools are also available over plain HTTP for non-MCP clients:
