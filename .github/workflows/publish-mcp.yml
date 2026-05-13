@@ -60,7 +60,7 @@ jobs:
             -d @server.json)
           echo "publish resp: $resp"
           if echo "$resp" | grep -qiE '"status":\s*[45]'; then
-            if echo "$resp" | grep -qi "already"; then
+            if echo "$resp" | grep -qiE "already|duplicate"; then
               echo "Already published — idempotent, ok"; exit 0
             fi
             exit 1
