@@ -14,4 +14,9 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=int(os.getenv("PORT", "8000")),
         log_level=os.getenv("PUBRECORDS_LOG_LEVEL", "info").lower(),
+        # Railway terminates TLS at its edge. Trust its forwarded headers so
+        # Starlette's trailing-slash redirect stays on HTTPS instead of
+        # downgrading Glama's MCP health-check POST to http://.
+        proxy_headers=True,
+        forwarded_allow_ips="*",
     )
