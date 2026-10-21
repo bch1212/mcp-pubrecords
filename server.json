@@ -1,12 +1,12 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
   "name": "io.github.bch1212/pubrecords",
-  "description": "US public-records intelligence for AI agents — companies, SEC, courts, spending, licenses.",
+  "description": "Halverson IQ Data: public records, grants, and federal contracts.",
   "repository": {
     "url": "https://github.com/bch1212/mcp-pubrecords",
     "source": "github"
   },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "websiteUrl": "https://github.com/bch1212/mcp-pubrecords",
   "remotes": [
     {
@@ -15,7 +15,7 @@
       "headers": [
         {
           "name": "X-API-Key",
-          "description": "API key. Free dev key: pubrecords-dev-key-001 (30 calls/day). Pro at mcpize.com/pubrecords-mcp.",
+          "description": "Per-user API key. One key covers every tool on this server.",
           "isSecret": true,
           "isRequired": true
         }

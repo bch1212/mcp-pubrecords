@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pubrecords"
-version = "0.1.0"
-description = "Python client for the PubRecords MCP — US public-records intelligence for AI agents."
+version = "0.2.0"
+description = "Python client for Halverson IQ Data — public records, grants, and federal contracts."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"

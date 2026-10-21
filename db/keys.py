@@ -1,11 +1,15 @@
 """API-key auth + per-day rate limiting.
 
+One key store covers every tool on Halverson IQ Data.
+
 Tiers:
   - free: 30 calls/day (rolling 24h)
   - pro:  effectively unlimited (1,000,000 / day cap)
 
-Default dev key ``pubrecords-dev-key-001`` is auto-seeded on init at the free
-tier so local development works out of the box.
+``seed_default_keys`` inserts a local key so the test suite can exercise
+the free tier inside an isolated database. Production boot does not call
+it. Customers get their own key from POST /admin/keys. Do not publish the
+local value.
 """
 from __future__ import annotations
 
@@ -117,7 +121,7 @@ def check_and_increment(
 
 
 def seed_default_keys(path: Optional[str] = None) -> None:
-    """Idempotently insert the public dev key. Safe to call on every boot."""
+    """Insert the local test key if it is missing. Not called on production boot."""
     info = get_key_info(DEV_API_KEY, path=path)
     if info is None:
         register_key(DEV_API_KEY, tier="free", path=path)

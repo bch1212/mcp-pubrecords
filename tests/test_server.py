@@ -11,26 +11,6 @@ from typing import Any
 import httpx
 import pytest
 import respx
-from fastapi.testclient import TestClient
-
-
-# ---------------------------------------------------------------------------
-# Fixtures local to this file
-# ---------------------------------------------------------------------------
-
-
-@pytest.fixture
-def client():
-    # Import after _isolated_db has set PUBRECORDS_DB_PATH
-    from server import app
-
-    with TestClient(app) as c:
-        yield c
-
-
-@pytest.fixture
-def headers():
-    return {"X-API-Key": "pubrecords-dev-key-001"}
 
 
 def _ok(resp: httpx.Response) -> dict:
@@ -108,11 +88,38 @@ def test_rate_limit_exhaustion(monkeypatch):
 # ---------------------------------------------------------------------------
 
 
+def test_mcp_tools_use_documented_names():
+    import server
+
+    names = {tool.name for tool in server._mcp_obj._tool_manager.list_tools()}
+    assert names == {
+        "search_companies",
+        "get_company_details",
+        "search_sec_filings",
+        "get_sec_filing",
+        "search_court_cases",
+        "lookup_federal_spending",
+        "lookup_npi",
+        "get_ucc_filings",
+        "verify_entity",
+        "search_licenses",
+        "search_grants",
+        "get_grant_details",
+        "search_contracts",
+        "get_contract_details",
+        "search_awards",
+        "get_agencies",
+        "get_deadlines",
+        "match_opportunities",
+    }
+
+
 def test_health_no_auth_required(client):
     r = client.get("/health")
     body = _ok(r)
     assert body["status"] == "ok"
-    assert body["service"] == "pubrecords-mcp"
+    assert body["service"] == "halverson-iq-data"
+    assert body["product"] == "Halverson IQ Data"
 
 
 def test_missing_api_key_rejected(client):
@@ -454,10 +461,10 @@ def test_usage_endpoint_reflects_calls(client, headers):
 
 def test_429_includes_upgrade_url(client, headers, monkeypatch):
     # Manually exhaust the dev key bucket
-    from db.keys import FREE_DAILY_LIMIT, check_and_increment
+    from db.keys import DEV_API_KEY, FREE_DAILY_LIMIT, check_and_increment
 
     for _ in range(FREE_DAILY_LIMIT):
-        check_and_increment("pubrecords-dev-key-001")
+        check_and_increment(DEV_API_KEY)
 
     r = client.get(
         "/tools/get_ucc_filings",

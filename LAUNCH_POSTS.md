@@ -1,10 +1,12 @@
-# PubRecords MCP — Launch Posts
+# Halverson IQ Data — Launch Posts
+
+> The live product is Halverson IQ Data: public records, Grants.gov, and SAM.gov on one API key and one bill. Drafts below that still say "PubRecords" or "10 tools" predate that consolidation — update them before posting. Issue keys per user. Do not publish a shared dev key.
 
 > Brett owns posting + timing manually. Each draft below is ready to copy-paste.
 > Production URL: <https://mcp-pubrecords-production.up.railway.app>
 > Repo: <https://github.com/bch1212/mcp-pubrecords>
 > Anthropic MCP Registry: `io.github.bch1212/pubrecords` (v0.1.0, listed)
-> Free dev key: `pubrecords-dev-key-001` (30 calls/day)
+> API key: issued per user (`YOUR_API_KEY`). One key covers every tool.
 
 ---
 
@@ -18,7 +20,7 @@ I built a paid MCP server that aggregates US public-records APIs (OpenCorporates
 
 The thing that broke me was the inconsistency. Six APIs, six rate-limit headers, six response shapes, six failure modes. If you want an agent to verify a counterparty exists, surface their officers, find federal litigation history, and check contract awards, you used to need a babysitter. PubRecords MCP returns a normalized envelope from each source plus a cross-source `verify_entity` tool that hits OpenCorporates + EDGAR + USASpending in parallel and gives you a 0–100 confidence score.
 
-Stack: FastAPI + the official `mcp` SDK (streamable-http transport) + httpx async + SQLite for a 24h response cache. Listed in the Anthropic MCP Registry as `io.github.bch1212/pubrecords`. 19 unit tests + 13 production smoke checks. Free dev key seeded — no signup to evaluate.
+Stack: FastAPI + the official `mcp` SDK (streamable-http transport) + httpx async + SQLite for a 24h response cache. Listed in the Anthropic MCP Registry as `io.github.bch1212/pubrecords`. 19 unit tests + 13 production smoke checks. Keys are issued per user. One API key covers every tool.
 
 Live: https://mcp-pubrecords-production.up.railway.app/health
 Repo: https://github.com/bch1212/mcp-pubrecords
@@ -47,12 +49,12 @@ Just shipped **PubRecords MCP** — a paid MCP server that aggregates the messy 
 - `get_ucc_filings` (returns `not_implemented` — state SOS APIs aren't uniform; honest)
 - `verify_entity` — cross-source 0-100 confidence score (this is the headline)
 
-Listed in the Anthropic MCP Registry as `io.github.bch1212/pubrecords` (v0.1.0). Free dev key seeded so you can try it without signup. $29/mo Pro or $0.03/call.
+Listed in the Anthropic MCP Registry as `io.github.bch1212/pubrecords` (v0.1.0). Request a per-user API key. $29/mo Pro or $0.03/call on the single listing.
 
 ```
 claude mcp add --transport http pubrecords-mcp https://mcp-pubrecords-production.up.railway.app/mcp/
 ```
-Then set `X-API-Key: pubrecords-dev-key-001` in your client.
+Then set `X-API-Key: YOUR_API_KEY` in your client.
 
 Code: https://github.com/bch1212/mcp-pubrecords
 
@@ -81,7 +83,7 @@ Install:
 ```
 claude mcp add --transport http pubrecords-mcp https://mcp-pubrecords-production.up.railway.app/mcp/
 ```
-Set X-API-Key in your client. Free dev key: `pubrecords-dev-key-001` (30 calls/day).
+Set X-API-Key in your client to the per-user key you were issued (`YOUR_API_KEY`).
 
 Code: https://github.com/bch1212/mcp-pubrecords
 
@@ -110,7 +112,7 @@ free dev key seeded
 
 claude mcp add --transport http pubrecords-mcp https://mcp-pubrecords-production.up.railway.app/mcp/
 
-X-API-Key: pubrecords-dev-key-001
+X-API-Key: YOUR_API_KEY
 
 agents can now do KYB, due diligence, and compliance research without you babysitting six APIs
 
@@ -157,12 +159,12 @@ Compliance note: only proxies public data; honest "not_implemented" envelopes wh
 
 🚀 just shipped PubRecords MCP — paid MCP server unifying US public records (OpenCorporates / SEC EDGAR / CourtListener / USASpending / NPI / FCC) for due-diligence/KYB agents.
 
-10 tools + cross-source `verify_entity` confidence score. Listed in the Anthropic MCP Registry as `io.github.bch1212/pubrecords`. Free dev key seeded.
+10 tools + cross-source `verify_entity` confidence score. Listed in the Anthropic MCP Registry as `io.github.bch1212/pubrecords`. Per-user API keys. One bill for every tool.
 
 ```
 claude mcp add --transport http pubrecords-mcp https://mcp-pubrecords-production.up.railway.app/mcp/
 ```
-X-API-Key: `pubrecords-dev-key-001`
+X-API-Key: `YOUR_API_KEY`
 
 Repo: https://github.com/bch1212/mcp-pubrecords
 
@@ -180,7 +182,7 @@ PubRecords MCP is a paid MCP server that turns the messy patchwork of US public-
 
 **First comment (founder note):**
 
-Hey PH — I'm Brett. Built this because every agent I wired up for due-diligence research kept fragmenting across six free APIs, each with its own auth, rate limits, and quirks. PubRecords MCP wraps them with a 24-hour cache, async retries, and one X-API-Key. Free dev key seeded — no signup required to evaluate. Listed in the Anthropic MCP Registry. Genuinely curious which state-SOS UCC API I should adapt first; vote in the comments.
+Hey PH — I'm Brett. Built this because every agent I wired up for due-diligence research kept fragmenting across six free APIs, each with its own auth, rate limits, and quirks. PubRecords MCP wraps them with a 24-hour cache, async retries, and one X-API-Key. Per-user API keys, one bill. Listed in the Anthropic MCP Registry. Genuinely curious which state-SOS UCC API I should adapt first; vote in the comments.
 
 **Topics:** Developer Tools, Artificial Intelligence, API, SaaS
 
