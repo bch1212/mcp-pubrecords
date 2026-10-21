@@ -19,7 +19,7 @@ log = logging.getLogger("pubrecords.http")
 DEFAULT_TIMEOUT = httpx.Timeout(20.0, connect=10.0)
 DEFAULT_UA = os.getenv(
     "PUBRECORDS_HTTP_USER_AGENT",
-    "PubRecordsMCP/0.1 (+https://mcpize.com/pubrecords-mcp)",
+    "HalversonIQData/0.2 (+https://mcpize.com/pubrecords-mcp)",
 )
 
 

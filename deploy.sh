@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PubRecords MCP — Railway deploy script.
+# Halverson IQ Data — Railway deploy script.
 #
 # Run on Brett's Mac (the Cowork sandbox blocks Railway/Stripe/Cloudflare APIs).
 # Inherits secrets from ../. deploy-secrets.env.
@@ -53,14 +53,22 @@ if [[ ! -f ".railway/config.json" ]] && [[ ! -f "railway.json" ]]; then
 fi
 
 echo "==> Setting Railway environment variables"
-railway variables --set "PUBRECORDS_SEC_USER_AGENT=PubRecordsMCP brett.halverson@gmail.com" \
+# Keep an existing admin token. Generating a new one on every deploy would
+# lock out /admin/keys. The value is sent to Railway and is not printed.
+if [[ -z "${PUBRECORDS_ADMIN_TOKEN:-}" ]]; then
+  PUBRECORDS_ADMIN_TOKEN="$(openssl rand -hex 24)"
+  echo "PUBRECORDS_ADMIN_TOKEN was unset. A new token was stored in Railway."
+  echo "Read it from the Railway dashboard. It is not printed here."
+fi
+railway variables --set "PUBRECORDS_SEC_USER_AGENT=HalversonIQData brett.halverson@gmail.com" \
                   --set "PUBRECORDS_CACHE_TTL=86400" \
                   --set "PUBRECORDS_LOG_LEVEL=INFO" \
-                  --set "PUBRECORDS_ADMIN_TOKEN=$(openssl rand -hex 24)"
+                  --set "PUBRECORDS_ADMIN_TOKEN=${PUBRECORDS_ADMIN_TOKEN}"
 
-# Optional: set tokens if present in secrets file
+# Optional upstream tokens. Values are passed to Railway and are not printed.
 [[ -n "${OPENCORPORATES_TOKEN:-}" ]] && railway variables --set "OPENCORPORATES_TOKEN=$OPENCORPORATES_TOKEN"
 [[ -n "${COURTLISTENER_TOKEN:-}" ]] && railway variables --set "COURTLISTENER_TOKEN=$COURTLISTENER_TOKEN"
+[[ -n "${SAM_API_KEY:-}" ]] && railway variables --set "SAM_API_KEY=$SAM_API_KEY"
 
 echo "==> Deploying"
 railway up --detach
@@ -76,9 +84,13 @@ fi
 
 echo "==> Smoke checks against https://$DOMAIN"
 curl -fsS "https://$DOMAIN/health" | python3 -m json.tool
-curl -fsS -H "X-API-Key: pubrecords-dev-key-001" \
-  "https://$DOMAIN/usage" | python3 -m json.tool
+if [[ -n "${HALVERSON_SMOKE_API_KEY:-}" ]]; then
+  curl -fsS -H "X-API-Key: ${HALVERSON_SMOKE_API_KEY}" \
+    "https://$DOMAIN/usage" | python3 -m json.tool
+else
+  echo "Skipping /usage smoke. Set HALVERSON_SMOKE_API_KEY to an issued customer key."
+fi
 
 echo
-echo "==> Done. Add to Claude:"
-echo "    claude mcp add pubrecords-mcp --url https://$DOMAIN/mcp"
+echo "==> Done. Add to Claude with a per-user API key:"
+echo "    claude mcp add --transport http halverson-iq-data https://$DOMAIN/mcp/"

@@ -20,9 +20,12 @@ import pytest  # noqa: E402
 
 @pytest.fixture(autouse=True)
 def _isolated_db(tmp_path, monkeypatch):
-    """Each test gets its own SQLite file."""
+    """Each test gets its own SQLite file and a fake SAM.gov key."""
     db_file = tmp_path / "test_cache.db"
     monkeypatch.setenv("PUBRECORDS_DB_PATH", str(db_file))
+    # Placeholder only. Contract tools must read this env var and must not
+    # fall back to a baked-in key.
+    monkeypatch.setenv("SAM_API_KEY", "test-sam-key")
 
     # Re-import the cache module so DB_PATH picks up the env var
     import importlib
@@ -35,3 +38,21 @@ def _isolated_db(tmp_path, monkeypatch):
     cache_mod.init_db()
     keys_mod.seed_default_keys()
     yield db_file
+
+
+@pytest.fixture
+def client():
+    """FastAPI client. Imported after the isolated DB env is in place."""
+    from fastapi.testclient import TestClient
+
+    from server import app
+
+    with TestClient(app) as c:
+        yield c
+
+
+@pytest.fixture
+def headers():
+    from db.keys import DEV_API_KEY
+
+    return {"X-API-Key": DEV_API_KEY}

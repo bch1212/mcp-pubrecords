@@ -1,4 +1,4 @@
-# Smithery configuration for PubRecords MCP.
+# Smithery configuration for Halverson IQ Data.
 # Smithery auto-indexes public GitHub repos with this file.
 # https://smithery.ai/docs/build/project-config
 
@@ -11,10 +11,10 @@ startCommand:
     properties:
       apiKey:
         type: string
-        title: PubRecords API Key
-        description: "Free dev key: pubrecords-dev-key-001 (30 calls/day). Pro at mcpize.com/pubrecords-mcp."
+        title: Halverson IQ Data API Key
+        description: "Per-user API key. One key bills every tool on this server. Request a key from the operator; do not share a published dev key."
   exampleConfig:
-    apiKey: pubrecords-dev-key-001
+    apiKey: YOUR_API_KEY
 
 build:
   dockerfile: Dockerfile
